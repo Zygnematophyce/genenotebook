@@ -20,7 +20,7 @@ const addInterproscan = new ValidatedMethod({
     fileName: { type: String },
     parser: {
       type: String,
-      allowedValues: ['tsv', 'gff3'],
+      allowedValues: ['tsv', 'gff3', 'xml'],
     },
   }).validator(),
   applyOptions: {

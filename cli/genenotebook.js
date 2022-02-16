@@ -366,7 +366,7 @@ const addInterproscan = add.command('interproscan');
 
 addInterproscan
   .description('Add InterProScan results to a running GeneNoteBook server')
-  .usage('[options] <InterProScan gff3 or tsv output file>')
+  .usage('[options] <InterProScan [gff3, tsv, xml] output file>')
   .arguments('<file>')
   .requiredOption(
     '-u, --username <adminUsername>',
@@ -382,7 +382,7 @@ addInterproscan
   )
   .option(
     '--format [parser]',
-    `Choose a parser for the interproscan output files. Parses .gff3 and .tsv
+    `Choose a parser for the interproscan output files. Parses "gff3" and "tsv"
     extensions.`,
   )
   .action((file, { username, password, port = 3000, parser }) => {
@@ -396,9 +396,9 @@ addInterproscan
     let parserType;
     const extensionFile = path.extname(file).replace(/\./g, '');
 
-    if (['tsv', 'gff3'].includes(parser)) {
+    if (['tsv', 'gff3', 'xml'].includes(parser)) {
       parserType = parser;
-    } else if (['tsv', 'gff3'].includes(extensionFile)) {
+    } else if (['tsv', 'gff3', 'xml'].includes(extensionFile)) {
       parserType = extensionFile;
     } else {
       logger.error('--format parameter is not defined');
