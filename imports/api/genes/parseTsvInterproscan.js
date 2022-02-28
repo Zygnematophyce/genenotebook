@@ -54,6 +54,8 @@ class ParseTsvFile extends InterproscanProcessor {
       };
     }
 
+    logger.log('protein domain: ', proteinDomain);
+
     dbUpdate.$addToSet['subfeatures.$.protein_domains'] = proteinDomain;
     this.bulkOp.find({ 'subfeatures.ID': seqId }).update(dbUpdate);
   };
