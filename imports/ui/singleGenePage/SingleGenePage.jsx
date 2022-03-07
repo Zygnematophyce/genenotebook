@@ -15,6 +15,7 @@ import GeneralInfo from './GeneralInfo.jsx';
 import Genemodel from './Genemodel.jsx';
 import Seq from './Seq.jsx';
 import ProteinDomains from './ProteinDomains.jsx';
+import Eggnog from './eggnog/Eggnog.jsx';
 import Orthogroup from './orthoGroup/Orthogroup.jsx';
 
 import GeneExpression from './geneExpression/GeneExpression.jsx';
@@ -136,6 +137,9 @@ function SingleGenePage({ gene, genome = {} }) {
           </section>
           <section id="orthogroup">
             <Orthogroup gene={gene} showHeader resizable />
+          </section>
+          <section id="eggnog">
+            <Eggnog showHeader resizable />
           </section>
           <section id="expression">
             <GeneExpression gene={gene} showHeader resizable />
