@@ -109,6 +109,11 @@ function SingleGenePage({ gene, genome = {} }) {
                 </a>
               </li>
               <li>
+                <a href="#eggnog">
+                  Eggnog
+                </a>
+              </li>
+              <li>
                 <a href="#expression">
                   Expression
                 </a>
