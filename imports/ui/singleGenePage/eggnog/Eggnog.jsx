@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './eggnog.scss';
 
 // query seed_ortholog evalue score eggNOG_OGs max_annot_lvl COG_category
@@ -23,6 +23,32 @@ function NoEggnog({ showHeader }) {
           <p className="has-text-grey">No eggnog annotations found</p>
         </div>
       </article>
+    </>
+  );
+}
+
+function DescriptionAttribute({ descriptionValue }) {
+  const maxLength = 80;
+  const [isDescription, setIsDescription] = useState(false);
+  const isMaxLength = String(descriptionValue).length > maxLength;
+  const showDescription = isDescription
+    ? descriptionValue
+    : `${descriptionValue.slice(0, maxLength)} ... `;
+  const buttonText = isDescription ? 'Show less' : 'Show more ...';
+
+  return (
+    <>
+      <p>{ showDescription }</p>
+      {isMaxLength
+       && (
+         <button
+           type="button"
+           className="is-link"
+           onClick={() => setIsDescription(!isDescription)}
+         >
+           <small>{ buttonText }</small>
+         </button>
+       )}
     </>
   );
 }
@@ -66,13 +92,7 @@ function ArrayEggnogAnnotation() {
           <tr>
             <td>Description</td>
             <td>
-              The coatomer is a cytosolic protein complex that binds to
-              dilysine motifs and reversibly associates with Golgi non-
-              clathrin-coated vesicles, which further mediate biosynthetic
-              protein transport from the ER, via the Golgi up to the trans Golgi
-              network. Coatomer complex is required for budding from Golgi
-              membranes, and is essential for the retrograde Golgi-to-ER
-              transport of dilysine-tagged proteins
+              <DescriptionAttribute descriptionValue="The coatomer is a cytosolic protein complex that binds to dilysine motifs and reversibly associates with Golgi non- clathrin-coated vesicle which further mediate biosynthetic protein transport from the ER,  via the Golgi up to the trans Golgi network. Coatomer complex is required for budding from Golgi membranes, and is essential for the retrograde Golgi-to-ER transport of dilysine-tagged proteins" />
             </td>
           </tr>
           <tr>
