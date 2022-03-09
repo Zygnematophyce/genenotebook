@@ -43,3 +43,4 @@ import './jobqueue/process-makeBlastDb.js';
 import './jobqueue/process-blast.js';
 import './jobqueue/process-download.js';
 import './jobqueue/process-addGenome.js';
+import './jobqueue/process-eggnog.js'

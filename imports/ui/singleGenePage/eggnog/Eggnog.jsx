@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { branch, compose } from '/imports/ui/util/uiUtil.jsx';
 import './eggnog.scss';
 
 // query seed_ortholog evalue score eggNOG_OGs max_annot_lvl COG_category
@@ -12,6 +13,10 @@ function Header() {
       <h4 className="subtitle is-4">EggNog Annotations</h4>
     </>
   );
+}
+
+function hasNoEggnog({ eggnog }) {
+  return typeof eggnog === 'undefined';
 }
 
 function NoEggnog({ showHeader }) {
@@ -170,13 +175,18 @@ function ArrayEggnogAnnotation() {
   );
 }
 
-function EggNogAnnotation() {
+function EggNogAnnotation({ showHeader = false }) {
+  console.log("showHeader eggnog :", showHeader);
   return (
-    <div>
-      <Header />
-      <ArrayEggnogAnnotation />
-    </div>
+    <>
+      { showHeader && <Header />}
+      <div>
+        <ArrayEggnogAnnotation />
+      </div>
+    </>
   );
 }
 
-export default EggNogAnnotation;
+export default compose(
+  branch(hasNoEggnog, NoEggnog),
+)(EggNogAnnotation);
