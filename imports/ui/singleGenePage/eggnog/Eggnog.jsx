@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { branch, compose } from '/imports/ui/util/uiUtil.jsx';
+import { eggnogCollection } from '/imports/api/genes/eggnog/eggnogCollection.js';
+import { Genes } from '/imports/api/genes/geneCollection.js';
+import { withTracker } from 'meteor/react-meteor-data';
+import logger from '/imports/api/util/logger.js';
 import './eggnog.scss';
 
 // query seed_ortholog evalue score eggNOG_OGs max_annot_lvl COG_category
@@ -56,6 +60,16 @@ function DescriptionAttribute({ descriptionValue }) {
        )}
     </>
   );
+}
+
+function eggnogDataTracker({ gene }) {
+  logger.log('gene.ID :', gene.ID);
+  const eggnog = Genes.findOne({ 'ID': 'MMUCEDO_006644' });
+  // const eggnogC = eggnogCollection.findOne({ query_name: 'MMUCEDO_006644' });
+  logger.log('eggnog find() :', eggnog);
+  return {
+    eggnog,
+  };
 }
 
 function ArrayEggnogAnnotation() {
@@ -188,5 +202,6 @@ function EggNogAnnotation({ showHeader = false }) {
 }
 
 export default compose(
+  withTracker(eggnogDataTracker),
   branch(hasNoEggnog, NoEggnog),
 )(EggNogAnnotation);
