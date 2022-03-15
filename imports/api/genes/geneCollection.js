@@ -52,6 +52,12 @@ const IntervalBaseSchema = new SimpleSchema({
     // index: true,
     label: 'Any attributes',
   },
+  eggnog: {
+    type: Object,
+    optional: true,
+    blackbox: true,
+    label: 'Eggnog annotations',
+  },
   children: {
     type: Array, // [String],
     optional: true,
@@ -131,11 +137,6 @@ const GeneSchema = new SimpleSchema({
   'subfeatures.$': {
     type: SubfeatureSchema,
     label: 'Gene subfeatures',
-  },
-  eggnog: {
-    type: eggnogSchema,
-    optional: true,
-    label: 'Eggnog annotations',
   },
   genomeId: {
     type: String,

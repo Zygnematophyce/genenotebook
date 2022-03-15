@@ -1,5 +1,5 @@
-import ParseGff3File from '/imports/api/genes/parseGff3Interproscan.js';
-import ParseTsvFile from '/imports/api/genes/parseTsvInterproscan.js';
+import ParseGff3File from '/imports/api/genes//interproscan/parseGff3Interproscan.js';
+import ParseTsvFile from '/imports/api/genes/interproscan/parseTsvInterproscan.js';
 import logger from '/imports/api/util/logger.js';
 import jobQueue from './jobqueue.js';
 import readline from 'readline';

@@ -30,20 +30,8 @@ class EggnogProcessor {
         'KEGG_rclass': kegg_rclass, 'BRITE': brite, 'KEGG_TC': kegg_TC, 'CAZy':
         cazy, 'BiGG_Reaction': biGG_Reaction, 'PFAMs': pfams}
 
-
-      logger.log('query_name :', query_name);
       const seqId = query_name;
-      logger.log(this.bulkOp.find({ 'subfeatures.ID': seqId }).update( { $set: { score: "TBD" } } ));
-      logger.log(this.bulkOp.find({ 'subfeatures.ID': seqId }).update({},
-                                                                      {$set : {"new_field":1}},
-                                                                      {upsert:false,
-                                                                       multi:true}));
-
-      // this.bulkOp.update(
-      //   {'ID': query_name},
-      //   {$set : annotations },
-      //   {upsert: true}
-      // );
+      this.bulkOp.find({ 'subfeatures.ID': seqId }).update({ $set: { eggnog: annotations }} );
     }
   }
 

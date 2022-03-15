@@ -65,9 +65,9 @@ function DescriptionAttribute({ descriptionValue }) {
 
 function eggnogDataTracker({ gene }) {
   logger.log('Genes.findOne :', Genes.findOne({ ID: gene.ID })['eggnog']);
-  const eggnog = Genes.findOne({ ID: gene.ID })['eggnog']
-  //logger.log('dbxrefCollection.findOne :', dbxrefCollection.findOne({ dbxrefId: 'InterPro:IPR028587' }));
-  // logger.log('eggnogCollection.findOne :', eggnogCollection.findOne({ EC: '2.7.4.3' }));
+  const eggnogAnnotation = Genes.findOne({ ID: gene.ID })['eggnog'];
+  const eggnog = (Object.keys(eggnogAnnotation).length === 0 ? undefined : eggnogAnnotation);
+  logger.log('eggnog : ', eggnog);
   return {
     gene,
     eggnog,
