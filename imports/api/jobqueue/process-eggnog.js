@@ -35,7 +35,7 @@ jobQueue.processJobs(
     rl.on('close', async () => {
       try {
         logger.log('File reading finished');
-        // await lineProcessor.finalize();
+        await lineProcessor.finalize();
         job.done();
       } catch (err) {
         logger.error(err);

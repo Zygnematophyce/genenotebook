@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { branch, compose } from '/imports/ui/util/uiUtil.jsx';
 import { eggnogCollection } from '/imports/api/genes/eggnog/eggnogCollection.js';
+import { dbxrefCollection } from '/imports/api/genes/dbxrefCollection.js';
 import { Genes } from '/imports/api/genes/geneCollection.js';
 import { withTracker } from 'meteor/react-meteor-data';
 import logger from '/imports/api/util/logger.js';
+import { Meteor } from 'meteor/meteor';
 import './eggnog.scss';
 
 // query seed_ortholog evalue score eggNOG_OGs max_annot_lvl COG_category
@@ -63,12 +65,12 @@ function DescriptionAttribute({ descriptionValue }) {
 }
 
 function eggnogDataTracker({ gene }) {
-  logger.log('gene.ID :', gene.ID);
-  const eggnog = Genes.findOne({ 'ID': 'MMUCEDO_006644' });
-  // const eggnogC = eggnogCollection.findOne({ query_name: 'MMUCEDO_006644' });
-  logger.log('eggnog find() :', eggnog);
+  Meteor.subscribe('eggnog');
+  logger.log('Genes.findOne :', Genes.findOne({ ID: 'MMUCEDO_006643' }));
+  //logger.log('dbxrefCollection.findOne :', dbxrefCollection.findOne({ dbxrefId: 'InterPro:IPR028587' }));
+  logger.log('eggnogCollection.findOne :', eggnogCollection.findOne({ EC: '2.7.4.3' }));
   return {
-    eggnog,
+    gene,
   };
 }
 
@@ -96,8 +98,8 @@ function ArrayEggnogAnnotation() {
           <tr>
             <td>eggNOG OGs</td>
             <td>
-                KOG2635@1 root,KOG2635@2759 Eukaryota,38CXD@33154
-                Opisthokonta,3NUZ9@4751 Fungi,1GTC1@112252 Fungi incertae sedis
+              KOG2635@1 root,KOG2635@2759 Eukaryota,38CXD@33154
+              Opisthokonta,3NUZ9@4751 Fungi,1GTC1@112252 Fungi incertae sedis
             </td>
           </tr>
           <tr>

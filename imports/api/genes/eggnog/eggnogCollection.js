@@ -1,10 +1,8 @@
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
-const eggnogCollection = new Mongo.Collection('eggnog');
-
 const eggnogSchema = new SimpleSchema({
-  query_name: {
+  ID: {
     type: String,
     label: 'Query sequence name',
   },
@@ -78,6 +76,8 @@ const eggnogSchema = new SimpleSchema({
   },
 });
 
+const eggnogCollection = new Mongo.Collection('eggnog');
+
 eggnogCollection.attachSchema(eggnogSchema);
 
-export { eggnogCollection, eggnogSchema };
+export { eggnogCollection };
