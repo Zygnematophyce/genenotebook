@@ -27,13 +27,17 @@ function globPromise(pattern, options) {
 
 async function addOrthogroupTree({ fileName, session }) {
   // Turn filename into orthogroup ID
-  const orthogroupId = fileName.split('/').pop().split('_')[0];
+  const orthogroupId = fileName.split('/').pop().split('.')[0];
 
   // Parse newick formatted treefile
   const treeNewick = fs.readFileSync(fileName, 'utf8');
   const { size, geneIds } = parseNewick(treeNewick);
 
   logger.debug({ treeNewick });
+  logger.log('orthogroupId :', orthogroupId);
+  logger.log('size :', size);
+  logger.log('tree :', treeNewick);
+  logger.log('geneIds :', geneIds);
 
   // Set up data to insert
   const orthogroupData = {
@@ -46,6 +50,8 @@ async function addOrthogroupTree({ fileName, session }) {
   // Validate data against orthogroup schema
   // this throws an error for invalid data
   await orthogroupSchema.validate(orthogroupData);
+
+  logger.log('validate schema');
 
   // Insert orthogroup data
   await orthogroupCollection.rawCollection()

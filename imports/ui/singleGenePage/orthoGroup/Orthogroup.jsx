@@ -154,5 +154,5 @@ function Orthogroup({ orthogroup, showHeader = false }) {
 export default compose(
   withTracker(orthogroupDataTracker),
   branch(isLoading, Loading),
-  branch(hasNoOrthogroup, NoOrthogroup)
+  branch(hasNoOrthogroup, NoOrthogroup),
 )(Orthogroup);
