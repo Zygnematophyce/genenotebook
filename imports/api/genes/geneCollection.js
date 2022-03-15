@@ -1,3 +1,4 @@
+import { eggnogSchema } from '/imports/api/genes/eggnog/eggnogCollection.js';
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
@@ -98,7 +99,7 @@ const SubfeatureSchema = new SimpleSchema({
   },
 });
 
-// extend the subfeature schema with base subfeatures
+// Extend the subfeature schema with base subfeatures.
 SubfeatureSchema.extend(IntervalBaseSchema);
 
 const GeneSchema = new SimpleSchema({
@@ -131,6 +132,11 @@ const GeneSchema = new SimpleSchema({
     type: SubfeatureSchema,
     label: 'Gene subfeatures',
   },
+  eggnog: {
+    type: eggnogSchema,
+    optional: true,
+    label: 'Eggnog annotations',
+  },
   genomeId: {
     type: String,
     index: true,
@@ -162,7 +168,7 @@ const GeneSchema = new SimpleSchema({
   },
 });
 
-// extend the gene schema with base features
+// Extend the gene schema with base features.
 GeneSchema.extend(IntervalBaseSchema);
 
 Genes.attachSchema(GeneSchema);

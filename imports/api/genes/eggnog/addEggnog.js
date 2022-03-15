@@ -1,6 +1,6 @@
 import jobQueue, { Job } from '/imports/api/jobqueue/jobqueue.js';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
-import { eggnogCollection } from './eggnogCollection.js';
+import { Genes } from '/imports/api/genes/geneCollection.js';
 import logger from '/imports/api/util/logger.js';
 import { Roles } from 'meteor/alanning:roles';
 import SimpleSchema from 'simpl-schema';
@@ -8,7 +8,7 @@ import { Meteor } from 'meteor/meteor';
 
 class EggnogProcessor {
   constructor() {
-    this.bulkOp = eggnogCollection.rawCollection().initializeUnorderedBulkOp();
+    this.bulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
   }
 
   parse = (line) => {
@@ -30,7 +30,14 @@ class EggnogProcessor {
         'KEGG_rclass': kegg_rclass, 'BRITE': brite, 'KEGG_TC': kegg_TC, 'CAZy':
         cazy, 'BiGG_Reaction': biGG_Reaction, 'PFAMs': pfams}
 
-      this.bulkOp.insert(annotations);
+
+      logger.log('query_name :', query_name);
+      const seqId = query_name;
+      logger.log(this.bulkOp.find({ 'subfeatures.ID': seqId }).update( { $set: { score: "TBD" } } ));
+      logger.log(this.bulkOp.find({ 'subfeatures.ID': seqId }).update({},
+                                                                      {$set : {"new_field":1}},
+                                                                      {upsert:false,
+                                                                       multi:true}));
 
       // this.bulkOp.update(
       //   {'ID': query_name},

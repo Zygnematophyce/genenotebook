@@ -76,8 +76,8 @@ const eggnogSchema = new SimpleSchema({
   },
 });
 
-const eggnogCollection = new Mongo.Collection('eggnog');
+// const eggnogCollection = new Mongo.Collection('eggnog');
 
-eggnogCollection.attachSchema(eggnogSchema);
+// eggnogCollection.attachSchema(eggnogSchema);
 
-export { eggnogCollection };
+export { eggnogSchema };

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { branch, compose } from '/imports/ui/util/uiUtil.jsx';
-import { eggnogCollection } from '/imports/api/genes/eggnog/eggnogCollection.js';
 import { dbxrefCollection } from '/imports/api/genes/dbxrefCollection.js';
 import { Genes } from '/imports/api/genes/geneCollection.js';
 import { withTracker } from 'meteor/react-meteor-data';
@@ -65,12 +64,13 @@ function DescriptionAttribute({ descriptionValue }) {
 }
 
 function eggnogDataTracker({ gene }) {
-  Meteor.subscribe('eggnog');
-  logger.log('Genes.findOne :', Genes.findOne({ ID: 'MMUCEDO_006643' }));
+  logger.log('Genes.findOne :', Genes.findOne({ ID: gene.ID })['eggnog']);
+  const eggnog = Genes.findOne({ ID: gene.ID })['eggnog']
   //logger.log('dbxrefCollection.findOne :', dbxrefCollection.findOne({ dbxrefId: 'InterPro:IPR028587' }));
-  logger.log('eggnogCollection.findOne :', eggnogCollection.findOne({ EC: '2.7.4.3' }));
+  // logger.log('eggnogCollection.findOne :', eggnogCollection.findOne({ EC: '2.7.4.3' }));
   return {
     gene,
+    eggnog,
   };
 }
 
