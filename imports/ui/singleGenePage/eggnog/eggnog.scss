@@ -1,4 +1,9 @@
 .table-eggnog {
     width: 100%;
-    table-layout:fixed;
+    table-layout: fixed;
+}
+
+
+.table-eggnog td {
+    word-wrap: break-word;
 }
