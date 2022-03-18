@@ -1,4 +1,3 @@
-import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
 const eggnogSchema = new SimpleSchema({
@@ -38,46 +37,82 @@ const eggnogSchema = new SimpleSchema({
     type: String,
   },
   GOs: {
-    type: String,
+    type: Array,
     label: 'Comma delimited list of predicted Gene Ontology terms',
   },
+  'GOs.$': {
+    type: String,
+  },
   EC: {
+    type: Array,
+  },
+  'EC.$': {
     type: String,
   },
   KEGG_ko: {
+    type: Array,
+  },
+  'KEGG_ko.$': {
     type: String,
   },
   KEGG_Pathway: {
+    type: Array,
+  },
+  'KEGG_Pathway.$': {
     type: String,
   },
   KEGG_Module: {
+    type: Array,
+  },
+  'KEGG_Module.$': {
     type: String,
   },
   KEGG_Reaction: {
+    type: Array,
+  },
+  'KEGG_Reaction.$': {
     type: String,
   },
   KEGG_rclass: {
+    type: Array,
+  },
+  'KEGG_rclass.$': {
     type: String,
   },
   BRITE: {
+    type: Array,
+  },
+  'BRITE.$': {
     type: String,
   },
   KEGG_TC: {
+    type: Array,
+  },
+  'KEGG_TC.$': {
     type: String,
   },
   CAZy: {
+    type: Array,
+  },
+  'CAZy.$': {
     type: String,
   },
   BiGG_Reaction: {
+    type: Array,
+  },
+  'BiGG_Reaction.$': {
     type: String,
   },
   PFAMs: {
+    type: Array,
+  },
+  'PFAMs.$': {
     type: String,
   },
+  md5: {
+    type: String,
+    optional: true,
+  },
 });
-
-// const eggnogCollection = new Mongo.Collection('eggnog');
-
-// eggnogCollection.attachSchema(eggnogSchema);
 
 export { eggnogSchema };

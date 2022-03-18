@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { branch, compose } from '/imports/ui/util/uiUtil.jsx';
-import { dbxrefCollection } from '/imports/api/genes/dbxrefCollection.js';
 import { Genes } from '/imports/api/genes/geneCollection.js';
 import { withTracker } from 'meteor/react-meteor-data';
 import logger from '/imports/api/util/logger.js';
-import { Meteor } from 'meteor/meteor';
 import './eggnog.scss';
 
 function Header() {
@@ -34,7 +32,7 @@ function NoEggnog({ showHeader }) {
 }
 
 function DescriptionAttribute({ descriptionValue }) {
-  const maxLength = 80;
+  const maxLength = 70;
   const [isDescription, setIsDescription] = useState(false);
   const isMaxLength = String(descriptionValue).length > maxLength;
 
@@ -47,7 +45,7 @@ function DescriptionAttribute({ descriptionValue }) {
   const showDescription = isDescription
     ? `${descriptionValue.slice(0, maxLength)} ... `
     : descriptionValue;
-  const buttonText = isDescription ? 'Show less' : 'Show more ...';
+  const buttonText = isDescription ? 'Show more ...' : 'Show less';
 
   return (
     <>
@@ -75,11 +73,13 @@ function eggnogDataTracker({ gene }) {
   };
 }
 
-function ArrayEggnogAnnotation({ eggnog }) {
+function ArrayEggnogAnnotations({ eggnog }) {
   const attributes = Object.entries(eggnog).map(([key, value], index) => (
     <tr key={index}>
       <td key={key}>{key}</td>
-      <td key={value}><DescriptionAttribute descriptionValue={value} /></td>
+      <td key={value}>
+        <DescriptionAttribute descriptionValue={value} />
+      </td>
     </tr>
   ));
   return (
@@ -98,7 +98,7 @@ function EggNogAnnotation({ showHeader = false, eggnog }) {
     <>
       { showHeader && <Header />}
       <div>
-        <ArrayEggnogAnnotation eggnog={eggnog} />
+        <ArrayEggnogAnnotations eggnog={eggnog} />
       </div>
     </>
   );

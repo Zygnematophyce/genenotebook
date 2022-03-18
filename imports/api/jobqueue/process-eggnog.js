@@ -21,7 +21,17 @@ jobQueue.processJobs(
       crlfDelay: Infinity,
     });
 
+    const { size: fileSize } = await fs.promises.stat(fileName);
+    let processedBytes = 0;
+    let processedLines = 0;
+
     rl.on('line', async (line) => {
+      processedBytes += line.length + 1; // also count \n
+      processedLines += 1;
+      if ((processedLines % 100) === 0) {
+        await job.progress(processedBytes, fileSize, { echo: true },
+          (err) => { if (err) logger.error(err); });
+      }
       try {
         lineProcessor.parse(line);
       } catch (err) {
@@ -35,8 +45,10 @@ jobQueue.processJobs(
     rl.on('close', async () => {
       try {
         logger.log('File reading finished');
-        await lineProcessor.finalize();
-        job.done();
+        const { nMatched } = await lineProcessor.finalize();
+        const nInserted = nMatched;
+        logger.log(`Matched to ${nMatched} gene(s).`);
+        job.done({ nInserted });
       } catch (err) {
         logger.error(err);
         job.fail({ err });

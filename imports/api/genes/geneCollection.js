@@ -53,7 +53,7 @@ const IntervalBaseSchema = new SimpleSchema({
     label: 'Any attributes',
   },
   eggnog: {
-    type: Object,
+    type: eggnogSchema,
     optional: true,
     blackbox: true,
     label: 'Eggnog annotations',

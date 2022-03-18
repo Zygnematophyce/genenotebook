@@ -20,24 +20,45 @@ class EggnogProcessor {
         kegg_Module, kegg_Reaction, kegg_rclass, brite, kegg_TC, cazy,
         biGG_Reaction, pfams, ] = line.split('\t');
 
-      const annotations= { 'ID': query_name, 'seed_eggNOG_ortholog':
-        seed_eggNOG_ortholog, 'seed_ortholog_evalue': seed_ortholog_evalue,
-        'seed_ortholog_score': seed_ortholog_score, 'eggNOG_OGs': eggNOG_OGs,
-        'max_annot_lvl': max_annot_lvl, 'COG_category': cog_category,
-        'Description': description, 'Preferred_name': preferred_name, 'GOs':
-        gos, 'EC': ec, 'KEGG_ko': kegg_ko, 'KEGG_Pathway': kegg_Pathway,
-        'KEGG_Module': kegg_Module, 'KEGG_Reaction': kegg_Reaction,
-        'KEGG_rclass': kegg_rclass, 'BRITE': brite, 'KEGG_TC': kegg_TC, 'CAZy':
-        cazy, 'BiGG_Reaction': biGG_Reaction, 'PFAMs': pfams}
+      const annotations= {
+        'ID': query_name,
+        'seed_eggNOG_ortholog': seed_eggNOG_ortholog,
+        'seed_ortholog_evalue': seed_ortholog_evalue,
+        'seed_ortholog_score': seed_ortholog_score,
+        'eggNOG_OGs': eggNOG_OGs,
+        'max_annot_lvl': max_annot_lvl,
+        'COG_category': cog_category,
+        'Description': description,
+        'Preferred_name': preferred_name,
+        'GOs': gos,
+        'EC': ec,
+        'KEGG_ko': kegg_ko,
+        'KEGG_Pathway': kegg_Pathway,
+        'KEGG_Module': kegg_Module,
+        'KEGG_Reaction': kegg_Reaction,
+        'KEGG_rclass': kegg_rclass,
+        'BRITE': brite,
+        'KEGG_TC': kegg_TC,
+        'CAZy': cazy,
+        'BiGG_Reaction': biGG_Reaction,
+        'PFAMs': pfams
+      }
 
-      const seqId = query_name;
-      this.bulkOp.find({ 'subfeatures.ID': seqId }).update({ $set: { eggnog: annotations }} );
+      for (const [key, value] of Object.entries(annotations)) {
+        if (value[0] === '-') {
+          annotations[key] = ' ';
+        }
+        if( value.indexOf(',') > -1 ) {
+          annotations[key] = value.split(',');
+        }
+      }
+
+      this.bulkOp.find({ 'subfeatures.ID': query_name }).update({ $set: { eggnog: annotations }} );
     }
   }
 
   finalize = () => {
-    logger.log('finalize');
-    this.bulkOp.execute();
+    return this.bulkOp.execute();
   }
 }
 
