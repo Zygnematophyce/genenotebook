@@ -31,35 +31,66 @@ function NoEggnog({ showHeader }) {
   );
 }
 
-function DescriptionAttribute({ descriptionValue }) {
-  const maxLength = 70;
-  const [isDescription, setIsDescription] = useState(false);
-  const isMaxLength = String(descriptionValue).length > maxLength;
+function EggnogGeneralInformations({ informations }) {
+  const maxChar = 70;
+  const infoIsArray = Array.isArray(informations);
+  const isMaxArray = informations.length > 0;
+  const isMaxChar = informations.length > 70;
+
+  const [openInfo, setOpenInfo] = useState(false);
+  const [descArray, setDescArray] = useState([]);
+  const [descChar, setDescChar] = useState('');
 
   useEffect(() => {
-    if (isMaxLength) {
-      setIsDescription(true);
+    if (infoIsArray) {
+      if (openInfo) {
+        setDescArray(informations);
+      } else {
+        setDescArray([informations[0]]);
+      }
+    } else {
+      if (informations.length > maxChar) {
+        if (!openInfo) {
+          const descNoArray = informations
+            ? `${informations.slice(0, maxChar)} ... `
+            : informations;
+          setDescChar(descNoArray);
+        } else {
+          setDescChar(informations);
+        }
+      } else {
+        setDescChar(informations);
+      }
     }
-  }, []);
+  }, [openInfo]);
 
-  const showDescription = isDescription
-    ? `${descriptionValue.slice(0, maxLength)} ... `
-    : descriptionValue;
-  const buttonText = isDescription ? 'Show more ...' : 'Show less';
+  const buttonText = openInfo ? 'Show less' : 'Show more ...';
 
   return (
     <>
-      <p>{ showDescription }</p>
-      {isMaxLength
-       && (
-         <button
-           type="button"
-           className="is-link"
-           onClick={() => setIsDescription(!isDescription)}
-         >
-           <small>{ buttonText }</small>
-         </button>
-       )}
+      {
+        infoIsArray
+          ? (
+            <ul>
+              { descArray.map((value) => (
+                <li key={value}>{ value }</li>
+              ))}
+            </ul>
+          )
+          : (
+            <p>{ descChar }</p>
+          )
+      }
+      { (isMaxArray && infoIsArray) || (isMaxChar && !infoIsArray)
+        ? (
+          <button
+            type="button"
+            className="is-link"
+            onClick={() => setOpenInfo(!openInfo)}
+          >
+            <small>{ buttonText }</small>
+          </button>
+        ) : null }
     </>
   );
 }
@@ -78,7 +109,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
     <tr key={index}>
       <td key={key}>{key}</td>
       <td key={value}>
-        <DescriptionAttribute descriptionValue={value} />
+        <EggnogGeneralInformations informations={value} />
       </td>
     </tr>
   ));
