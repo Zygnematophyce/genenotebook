@@ -1,7 +1,7 @@
 import SimpleSchema from 'simpl-schema';
 
 const eggnogSchema = new SimpleSchema({
-  ID: {
+  query_name: {
     type: String,
     label: 'Query sequence name',
   },

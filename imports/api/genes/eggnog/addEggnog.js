@@ -21,7 +21,7 @@ class EggnogProcessor {
         biGG_Reaction, pfams, ] = line.split('\t');
 
       const annotations= {
-        'ID': query_name,
+        'query_name': query_name,
         'seed_eggNOG_ortholog': seed_eggNOG_ortholog,
         'seed_ortholog_evalue': seed_ortholog_evalue,
         'seed_ortholog_score': seed_ortholog_score,

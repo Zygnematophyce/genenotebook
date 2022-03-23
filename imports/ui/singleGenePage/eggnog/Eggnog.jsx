@@ -64,7 +64,19 @@ function EggnogGeneralInformations({ informations }) {
     }
   }, [openInfo]);
 
-  const buttonText = openInfo ? 'Show less' : 'Show more ...';
+  const buttonText = (() => {
+    if (infoIsArray) {
+      if (openInfo) {
+        return 'Show less';
+      }
+      return `Show ${informations.length - 1} more ...`;
+    } else {
+      if (openInfo) {
+        return 'Show less';
+      }
+      return 'Show more ...';
+    }
+  })();
 
   return (
     <>
@@ -104,10 +116,14 @@ function eggnogDataTracker({ gene }) {
   };
 }
 
+function EggnogOGsComponent({ values }) {
+  const eggnog5Url = "http://eggnog5.embl.de/#/app/results?target_nogs=";
+}
+
 function ArrayEggnogAnnotations({ eggnog }) {
   const attributes = Object.entries(eggnog).map(([key, value], index) => (
     <tr key={index}>
-      <td key={key}>{key}</td>
+      <td key={key}>{key.replace(/_/g, ' ')}</td>
       <td key={value}>
         <EggnogGeneralInformations informations={value} />
       </td>
@@ -117,6 +133,14 @@ function ArrayEggnogAnnotations({ eggnog }) {
     <div>
       <table className="table-eggnog table is-hoverable is-striped ">
         <tbody>
+          <tr>
+            <td>Test :</td>
+            <td>{ eggnog.query_name }</td>
+          </tr>
+          <tr>
+            <td>eggNOG OGs Tableau :</td>
+            <td>{ eggnog.eggNOG_OGs }</td>
+          </tr>
           {attributes}
         </tbody>
       </table>
