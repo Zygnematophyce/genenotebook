@@ -25,7 +25,7 @@ function globPromise(pattern, options) {
   });
 }
 
-async function addOrthogroupTree({ fileName, session }) {
+async function addOrthogroupTree({ fileName }) {
   // Turn filename into orthogroup ID
   const orthogroupId = fileName.split('/').pop().split('.')[0];
 
@@ -53,11 +53,10 @@ async function addOrthogroupTree({ fileName, session }) {
 
   logger.log('validate schema');
 
-  // Insert orthogroup data
-  await orthogroupCollection.rawCollection()
-    .insert(orthogroupData, { session });
+  // Insert orthogroup data.
+  await orthogroupCollection.rawCollection().insert(orthogroupData);
 
-  // Find genes belonging to orthogroup
+  // Find genes belonging to orthogroup.
   const orthogroupGenes = await Genes.rawCollection()
     .find(
       {
@@ -66,9 +65,10 @@ async function addOrthogroupTree({ fileName, session }) {
           { 'subfeatures.ID': { $in: geneIds } },
         ],
       },
-      { session },
     )
     .toArray();
+
+  logger.log('orthogroupGenes find() :', orthogroupGenes);
 
   const orthogroupGeneIds = orthogroupGenes.map(({ ID }) => ID);
   if (orthogroupGeneIds.size === 0) {
@@ -78,12 +78,15 @@ async function addOrthogroupTree({ fileName, session }) {
     );
   }
 
+  logger.log('orthogroupGenesIds :', orthogroupGeneIds);
+
   // Update genes in orthogroups with orthogroup ID
   await Genes.rawCollection().update(
     { ID: { $in: orthogroupGeneIds } }, // query
     { $set: { orthogroupId } }, // changes
-    { multi: true, session }, // options
+    { multi: true }, // options
   );
+
   return orthogroupGeneIds.length;
 }
 
@@ -116,7 +119,7 @@ const addOrthogroupTrees = new ValidatedMethod({
           // Iterate over all files in the folder
           const results = await Promise.all(
             fileNames.map(
-              async (fileName) => addOrthogroupTree({ fileName, session }),
+              async (fileName) => addOrthogroupTree({ fileName }),
             ),
           );
           // If no error commit all changes

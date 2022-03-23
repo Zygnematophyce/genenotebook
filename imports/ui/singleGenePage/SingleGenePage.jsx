@@ -138,9 +138,6 @@ function SingleGenePage({ gene, genome = {} }) {
           <section id="orthogroup">
             <Orthogroup gene={gene} showHeader resizable />
           </section>
-          <section id="eggnog">
-            <Eggnog eggnog showHeader resizable />
-          </section>
           <section id="expression">
             <GeneExpression gene={gene} showHeader resizable />
           </section>
