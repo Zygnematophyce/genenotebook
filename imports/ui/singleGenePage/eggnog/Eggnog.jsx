@@ -84,8 +84,8 @@ function EggnogGeneralInformations({ informations }) {
         infoIsArray
           ? (
             <ul>
-              { descArray.map((value) => (
-                <li key={value}>{ value }</li>
+              { descArray.map((value, index) => (
+                <li key={index}>{ value }</li>
               ))}
             </ul>
           )
@@ -117,7 +117,28 @@ function eggnogDataTracker({ gene }) {
 }
 
 function EggnogOGsComponent({ values }) {
-  const eggnog5Url = "http://eggnog5.embl.de/#/app/results?target_nogs=";
+  const eggnog5Url = 'http://eggnog5.embl.de/#/app/results?target_nogs=';
+
+  // Split values and get the identifiant (COG0563@1|root -> COG0563@1).
+  const eggnogOGsSplit = (Array.isArray(values)
+    ? values.map((val) => val.split('|')[0])
+    : values.split('|')[0]
+  );
+
+  // Create array or not of <a> tag with the correct url.
+  const eggOgsUrl = (Array.isArray(eggnogOGsSplit)
+    ? eggnogOGsSplit.map((eggS, index) => {
+      return (
+        <a href={eggnog5Url.concat(eggS)}>
+          {values[index]}
+        </a>
+      );
+    })
+    : <a href={eggnog5Url.concat(eggnogOGsSplit)}>{values}</a>);
+
+  return (
+    <EggnogGeneralInformations informations={eggOgsUrl} />
+  );
 }
 
 function ArrayEggnogAnnotations({ eggnog }) {
@@ -139,7 +160,9 @@ function ArrayEggnogAnnotations({ eggnog }) {
           </tr>
           <tr>
             <td>eggNOG OGs Tableau :</td>
-            <td>{ eggnog.eggNOG_OGs }</td>
+            <td>
+              <EggnogOGsComponent values={eggnog.eggNOG_OGs} />
+            </td>
           </tr>
           {attributes}
         </tbody>
