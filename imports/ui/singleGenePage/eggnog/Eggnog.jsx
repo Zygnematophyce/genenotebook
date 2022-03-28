@@ -149,7 +149,7 @@ function SeedEggNOGOrtholog({ seed, evalue, score }) {
 function EggnogOGsComponent({ values }) {
   const eggnog5Url = 'http://eggnog5.embl.de/#/app/results?target_nogs=';
 
-  // Split values and get eggnog id. (COG0563@1|root -> COG0563@1).
+  // Split values and get eggnog id. (COG0563@1|root -> COG0563).
   const eggnogOGsSplit = (Array.isArray(values)
     ? values.map((val) => val.split('|')[0].split('@')[0])
     : values.split('|')[0]
@@ -181,6 +181,55 @@ function MaxAnnotLvlComponent({ annot }) {
     <a href={ncbiUrl.concat(maxAnnot)} target="_blank" rel="noreferrer">
       { annot }
     </a>
+  );
+}
+
+function GogCategoryComponent({ category }) {
+  const functionalClassifications = {
+    A: 'RNA processing and modification',
+    B: 'Chromatin Structure and dynamics',
+    C: 'Energy production and conversion',
+    D: 'Cell cycle control and mitosis',
+    E: 'Amino Acid metabolis and transport',
+    F: 'Nucleotide metabolism and transport',
+    G: 'Carbohydrate metabolism and transport',
+    H: 'Coenzyme metabolis',
+    I: 'Lipid metabolism',
+    J: 'Tranlsation',
+    K: 'Transcription',
+    L: 'Replication and repair',
+    M: 'Cell wall/membrane/envelop biogenesis',
+    N: 'Cell motility',
+    O: 'Post-translational modification, protein turnover, chaperone functions',
+    P: 'Inorganic ion transport and metabolism',
+    Q: 'Secondary Structure',
+    T: ' Signal Transduction',
+    U: 'Intracellular trafficing and secretion',
+    Y: 'Nuclear structure',
+    Z: 'Cytoskeleton',
+    R: 'General Functional Prediction only',
+    S: 'Function Unknown',
+  };
+
+  const description = functionalClassifications[`${category}`];
+
+  return (
+    <div className="gogcategory">
+      <p>
+        { category }
+      </p>
+      {
+        description
+          ? (
+            <p>
+              <span>(</span>
+              { description }
+              <span>)</span>
+            </p>
+          )
+          : null
+      }
+    </div>
   );
 }
 
@@ -233,7 +282,9 @@ function ArrayEggnogAnnotations({ eggnog }) {
           </tr>
           <tr>
             <td>COG category</td>
-            <td>{eggnog.COG_category}</td>
+            <td>
+              <GogCategoryComponent category={eggnog.COG_category} />
+            </td>
           </tr>
           <tr>
             <td>Description</td>
