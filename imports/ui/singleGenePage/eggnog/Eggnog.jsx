@@ -151,9 +151,8 @@ function EggnogOGsComponent({ values }) {
 
   // Split values and get eggnog id. (COG0563@1|root -> COG0563).
   const eggnogOGsSplit = (Array.isArray(values)
-    ? values.map((val) => val.split('|')[0].split('@')[0])
-    : values.split('|')[0]
-  );
+    ? values.map((val) => val.split('@')[0])
+    : values.split('@')[0]);
 
   // Create array or not of <a> tag with the correct url.
   const eggOgsUrl = (Array.isArray(eggnogOGsSplit)
@@ -288,7 +287,9 @@ function ArrayEggnogAnnotations({ eggnog }) {
           </tr>
           <tr>
             <td>Description</td>
-            <td><EggnogGeneralInformations informations={eggnog.Description} /></td>
+            <td>
+              <EggnogGeneralInformations informations={eggnog.Description} />
+            </td>
           </tr>
           <tr>
             <td>Preferred name</td>
