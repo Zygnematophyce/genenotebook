@@ -119,11 +119,21 @@ function eggnogDataTracker({ gene }) {
 function SeedEggNOGOrtholog({ seed, evalue, score }) {
   const uniprotUrl = 'https://www.uniprot.org/uniprot/';
 
-  // Split to get the uniprot identifiant (eg. 36080.S2K726  -> S2K726)
+  // Split to get uniprot id (eg. 36080.S2K726  -> S2K726).
   const identifiant = seed.split('.')[1];
-  const beforeEvalue = evalue.split('e')[0];
-  const afterEvalue = evalue.split('e')[1];
-  const eggnogEvalue = (evalue.indexOf('e') > -1 ? <span>{evalue.split('e')[0]} {'\u2091'}<sup>{evalue.split('e')[1]}</sup></span> : <span>evalue</span>);
+
+  // If found 'e' transforms into exponential.
+  const eggnogEvalue = (evalue.indexOf('e') > -1
+    ? (
+      <span>
+        {evalue.split('e')[0]}
+        {'\u2091'}
+        <sup>
+          {evalue.split('e')[1]}
+        </sup>
+      </span>
+    )
+    : <span>evalue</span>);
 
   return (
     <td className="seed_eggnog_ortholog_table">
@@ -139,9 +149,9 @@ function SeedEggNOGOrtholog({ seed, evalue, score }) {
 function EggnogOGsComponent({ values }) {
   const eggnog5Url = 'http://eggnog5.embl.de/#/app/results?target_nogs=';
 
-  // Split values and get the identifiant (COG0563@1|root -> COG0563@1).
+  // Split values and get eggnog id. (COG0563@1|root -> COG0563@1).
   const eggnogOGsSplit = (Array.isArray(values)
-    ? values.map((val) => val.split('|')[0])
+    ? values.map((val) => val.split('|')[0].split('@')[0])
     : values.split('|')[0]
   );
 
@@ -158,6 +168,19 @@ function EggnogOGsComponent({ values }) {
 
   return (
     <EggnogGeneralInformations informations={eggOgsUrl} />
+  );
+}
+
+function MaxAnnotLvlComponent({ annot }) {
+  const ncbiUrl = 'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=';
+
+  // Split to get ncbi id (eg. 4751|Fungi -> 4751).
+  const maxAnnot = annot.split('|')[0];
+
+  return (
+    <a href={ncbiUrl.concat(maxAnnot)} target="_blank" rel="noreferrer">
+      { annot }
+    </a>
   );
 }
 
@@ -204,7 +227,9 @@ function ArrayEggnogAnnotations({ eggnog }) {
           </tr>
           <tr>
             <td>max annot lvl</td>
-            <td>{eggnog.max_annot_lvl}</td>
+            <td>
+              <MaxAnnotLvlComponent annot={eggnog.max_annot_lvl} />
+            </td>
           </tr>
           <tr>
             <td>COG category</td>
