@@ -3,7 +3,15 @@
     table-layout: fixed;
 }
 
+.seed_eggnog_ortholog_table a,
+.seed_eggnog_ortholog_table p {
+    display: inline-block;
+    margin-right: 15px;
+}
 
-.table-eggnog td {
-    word-wrap: break-word;
+.scrolling-goterms {
+    display: block;
+    max-height: 200px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
 }

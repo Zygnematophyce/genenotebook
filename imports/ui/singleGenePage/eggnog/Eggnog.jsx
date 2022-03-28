@@ -116,6 +116,26 @@ function eggnogDataTracker({ gene }) {
   };
 }
 
+function SeedEggNOGOrtholog({ seed, evalue, score }) {
+  const uniprotUrl = 'https://www.uniprot.org/uniprot/';
+
+  // Split to get the uniprot identifiant (eg. 36080.S2K726  -> S2K726)
+  const identifiant = seed.split('.')[1];
+  const beforeEvalue = evalue.split('e')[0];
+  const afterEvalue = evalue.split('e')[1];
+  const eggnogEvalue = (evalue.indexOf('e') > -1 ? <span>{evalue.split('e')[0]} {'\u2091'}<sup>{evalue.split('e')[1]}</sup></span> : <span>evalue</span>);
+
+  return (
+    <td className="seed_eggnog_ortholog_table">
+      <a href={uniprotUrl.concat(identifiant)} target="_blank" rel="noreferrer">
+        { seed }
+      </a>
+      <p>evalue: { eggnogEvalue }</p>
+      <p>score: { score }</p>
+    </td>
+  );
+}
+
 function EggnogOGsComponent({ values }) {
   const eggnog5Url = 'http://eggnog5.embl.de/#/app/results?target_nogs=';
 
@@ -129,42 +149,141 @@ function EggnogOGsComponent({ values }) {
   const eggOgsUrl = (Array.isArray(eggnogOGsSplit)
     ? eggnogOGsSplit.map((eggS, index) => {
       return (
-        <a href={eggnog5Url.concat(eggS)}>
+        <a href={eggnog5Url.concat(eggS)} target="_blank" rel="noreferrer">
           {values[index]}
         </a>
       );
     })
-    : <a href={eggnog5Url.concat(eggnogOGsSplit)}>{values}</a>);
+    : <a href={eggnog5Url.concat(eggnogOGsSplit)} target="_blank" rel="noreferrer">{values}</a>);
 
   return (
     <EggnogGeneralInformations informations={eggOgsUrl} />
   );
 }
 
+function LinkedComponent({ values, url }) {
+  const linkUrl = (url === undefined ? '' : url);
+
+  const linkedAttribute = (Array.isArray(values)
+    ? values.map((val) => {
+      return (
+        <a href={linkUrl.concat(val)} target="_blank" rel="noreferrer">
+          {val}
+        </a>
+      );
+    })
+    : (
+      <a href={linkUrl.concat(values)} target="_blank" rel="noreferrer">
+        {values}
+      </a>
+    ));
+
+  return (
+    <EggnogGeneralInformations informations={linkedAttribute} />
+  );
+}
+
 function ArrayEggnogAnnotations({ eggnog }) {
-  const attributes = Object.entries(eggnog).map(([key, value], index) => (
-    <tr key={index}>
-      <td key={key}>{key.replace(/_/g, ' ')}</td>
-      <td key={value}>
-        <EggnogGeneralInformations informations={value} />
-      </td>
-    </tr>
-  ));
   return (
     <div>
       <table className="table-eggnog table is-hoverable is-striped ">
         <tbody>
           <tr>
-            <td>Test :</td>
-            <td>{ eggnog.query_name }</td>
+            <td>Seed eggnog ortholog</td>
+            <SeedEggNOGOrtholog
+              seed={eggnog.seed_eggNOG_ortholog}
+              evalue={eggnog.seed_ortholog_evalue}
+              score={eggnog.seed_ortholog_score}
+            />
           </tr>
           <tr>
-            <td>eggNOG OGs Tableau :</td>
+            <td>eggNOG OGs</td>
             <td>
               <EggnogOGsComponent values={eggnog.eggNOG_OGs} />
             </td>
           </tr>
-          {attributes}
+          <tr>
+            <td>max annot lvl</td>
+            <td>{eggnog.max_annot_lvl}</td>
+          </tr>
+          <tr>
+            <td>COG category</td>
+            <td>{eggnog.COG_category}</td>
+          </tr>
+          <tr>
+            <td>Description</td>
+            <td><EggnogGeneralInformations informations={eggnog.Description} /></td>
+          </tr>
+          <tr>
+            <td>Preferred name</td>
+            <td>{eggnog.Preferred_name}</td>
+          </tr>
+          <tr>
+            <td>GOs</td>
+            <td className="scrolling-goterms">
+              <LinkedComponent values={eggnog.GOs} url="http://amigo.geneontology.org/amigo/term/" />
+            </td>
+          </tr>
+          <tr>
+            <td>EC</td>
+            <td>
+              <LinkedComponent values={eggnog.EC} url="https://enzyme.expasy.org/EC/" />
+            </td>
+          </tr>
+          <tr>
+            <td>KEGG ko</td>
+            <td>
+              <LinkedComponent values={eggnog.KEGG_ko} url="https://kegg_ko.com/" />
+            </td>
+          </tr>
+          <tr>
+            <td>KEGG Pathway</td>
+            <td>
+              <LinkedComponent values={eggnog.KEGG_Pathway} url="https://kegg_pathway.com/" />
+            </td>
+          </tr>
+          <tr>
+            <td>KEGG Reaction</td>
+            <td>
+              <LinkedComponent values={eggnog.KEGG_Reaction} />
+            </td>
+          </tr>
+          <tr>
+            <td>KEGG rclass</td>
+            <td>
+              <EggnogGeneralInformations informations={eggnog.KEGG_rclass} />
+            </td>
+          </tr>
+          <tr>
+            <td>BRITE</td>
+            <td>
+              <LinkedComponent values={eggnog.BRITE} />
+            </td>
+          </tr>
+          <tr>
+            <td>KEGG TC</td>
+            <td>
+              <LinkedComponent values={eggnog.KEGG_TC} />
+            </td>
+          </tr>
+          <tr>
+            <td>CAZy</td>
+            <td>
+              <LinkedComponent values={eggnog.CAZy} />
+            </td>
+          </tr>
+          <tr>
+            <td>BiGG Reaction</td>
+            <td>
+              <LinkedComponent values={eggnog.Bigg_Reaction} />
+            </td>
+          </tr>
+          <tr>
+            <td>PFAMs</td>
+            <td>
+              <LinkedComponent values={eggnog.PFAMs} />
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
