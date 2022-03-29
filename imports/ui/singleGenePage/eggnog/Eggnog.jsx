@@ -133,7 +133,7 @@ function SeedEggNOGOrtholog({ seed, evalue, score }) {
         </sup>
       </span>
     )
-    : <span>evalue</span>);
+    : <span>{evalue}</span>);
 
   return (
     <td className="seed_eggnog_ortholog_table">
@@ -232,6 +232,33 @@ function GogCategoryComponent({ category }) {
   );
 }
 
+function BiggReactionComponent({ reaction }) {
+  // Based on: http://bigg.ucsd.edu/models/****/genes/****/
+  const biggModelsUrl = 'http://bigg.ucsd.edu/models/';
+  const biggGenesUrl = '/genes/';
+
+  // Split bigg reaction to get models and genes id (eg. iMM904.YER091C ->
+  // model: iMM904 and gene: YER091C) and create array or not of <a> tag with
+  // full url.
+  const biggReactionUrl = (Array.isArray(reaction)
+    ? reaction.map((val) => {
+      return (
+        <a
+          href={biggModelsUrl.concat(val.split('.')[0], biggGenesUrl, val.split('.')[1])}
+          target="_blank"
+          rel="noreferrer"
+        >
+          { val }
+        </a>
+      );
+    })
+    : <a href={biggModelsUrl.concat(reaction.split('.')[0], biggGenesUrl, reaction.split('.')[1])} target="_blank" rel="noreferrer">{ reaction }</a>);
+
+  return (
+    <EggnogGeneralInformations informations={biggReactionUrl} />
+  );
+}
+
 function LinkedComponent({ values, url }) {
   const linkUrl = (url === undefined ? '' : url);
 
@@ -310,37 +337,37 @@ function ArrayEggnogAnnotations({ eggnog }) {
           <tr>
             <td>KEGG ko</td>
             <td>
-              <LinkedComponent values={eggnog.KEGG_ko} url="https://kegg_ko.com/" />
+              <LinkedComponent values={eggnog.KEGG_ko} url="https://www.genome.jp/entry/" />
             </td>
           </tr>
           <tr>
             <td>KEGG Pathway</td>
             <td>
-              <LinkedComponent values={eggnog.KEGG_Pathway} url="https://kegg_pathway.com/" />
+              <LinkedComponent values={eggnog.KEGG_Pathway} url="https://www.genome.jp/entry/" />
             </td>
           </tr>
           <tr>
             <td>KEGG Reaction</td>
             <td>
-              <LinkedComponent values={eggnog.KEGG_Reaction} />
+              <LinkedComponent values={eggnog.KEGG_Reaction} url="https://www.genome.jp/entry/" />
             </td>
           </tr>
           <tr>
             <td>KEGG rclass</td>
             <td>
-              <EggnogGeneralInformations informations={eggnog.KEGG_rclass} />
+              <LinkedComponent values={eggnog.KEGG_rclass} url="https://www.genome.jp/entry/" />
             </td>
           </tr>
           <tr>
             <td>BRITE</td>
             <td>
-              <LinkedComponent values={eggnog.BRITE} />
+              <LinkedComponent values={eggnog.BRITE} url="https://www.genome.jp/brite/" />
             </td>
           </tr>
           <tr>
             <td>KEGG TC</td>
             <td>
-              <LinkedComponent values={eggnog.KEGG_TC} />
+              <EggnogGeneralInformations informations={eggnog.KEGG_TC} />
             </td>
           </tr>
           <tr>
@@ -352,13 +379,13 @@ function ArrayEggnogAnnotations({ eggnog }) {
           <tr>
             <td>BiGG Reaction</td>
             <td>
-              <LinkedComponent values={eggnog.Bigg_Reaction} />
+              <BiggReactionComponent reaction={eggnog.BiGG_Reaction} />
             </td>
           </tr>
           <tr>
             <td>PFAMs</td>
             <td>
-              <LinkedComponent values={eggnog.PFAMs} />
+              <LinkedComponent values={eggnog.PFAMs} url="https://pfam.xfam.org/family/" />
             </td>
           </tr>
         </tbody>
