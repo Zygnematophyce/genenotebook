@@ -232,6 +232,48 @@ function GogCategoryComponent({ category }) {
   );
 }
 
+function KeggtcComponent({ keggtc }){
+  const keggtcUrl = 'https://tcdb.org/search/result.php?tc=';
+  const keggtcFullUrl = (Array.isArray(keggtc)
+    ? keggtc.map((val) => {
+      return (
+        <a
+          href={keggtcUrl.concat(val)}
+          target="_blank"
+          rel="noreferrer"
+        >
+          { val }
+        </a>
+      );
+    })
+    : <a href={keggtc.concat(keggtc)} target="_blank" rel="noreferrer">{ keggtc }</a>);
+
+  return (
+    <EggnogGeneralInformations informations={keggtcFullUrl} />
+  );
+}
+
+function CazyComponent({ cazy }) {
+  const cazyUrl = 'http://www.cazy.org/';
+  const cazyFullUrl = (Array.isArray(cazy)
+    ? cazy.map((val) => {
+      return (
+        <a
+          href={cazyUrl.concat(cazy, '.html')}
+          target="_blank"
+          rel="noreferrer"
+        >
+          { val }
+        </a>
+      );
+    })
+    : <a href={cazyUrl.concat(cazy, '.html')} target="_blank" rel="noreferrer">{ cazy }</a>);
+
+  return (
+    <EggnogGeneralInformations informations={cazyFullUrl} />
+  );
+}
+
 function BiggReactionComponent({ reaction }) {
   // Based on: http://bigg.ucsd.edu/models/****/genes/****/
   const biggModelsUrl = 'http://bigg.ucsd.edu/models/';
@@ -367,13 +409,13 @@ function ArrayEggnogAnnotations({ eggnog }) {
           <tr>
             <td>KEGG TC</td>
             <td>
-              <EggnogGeneralInformations informations={eggnog.KEGG_TC} />
+              <KeggtcComponent keggtc={eggnog.KEGG_TC} />
             </td>
           </tr>
           <tr>
             <td>CAZy</td>
             <td>
-              <LinkedComponent values={eggnog.CAZy} />
+              <CazyComponent cazy={eggnog.CAZy} />
             </td>
           </tr>
           <tr>
