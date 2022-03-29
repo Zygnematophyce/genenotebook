@@ -1,8 +1,8 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
 import { branch, compose } from '/imports/ui/util/uiUtil.jsx';
 import { Genes } from '/imports/api/genes/geneCollection.js';
 import { withTracker } from 'meteor/react-meteor-data';
-import logger from '/imports/api/util/logger.js';
 import './eggnog.scss';
 
 function Header() {
@@ -31,82 +31,6 @@ function NoEggnog({ showHeader }) {
   );
 }
 
-function EggnogGeneralInformations({ informations }) {
-  const maxChar = 70;
-  const infoIsArray = Array.isArray(informations);
-  const isMaxArray = informations.length > 0;
-  const isMaxChar = informations.length > 70;
-
-  const [openInfo, setOpenInfo] = useState(false);
-  const [descArray, setDescArray] = useState([]);
-  const [descChar, setDescChar] = useState('');
-
-  useEffect(() => {
-    if (infoIsArray) {
-      if (openInfo) {
-        setDescArray(informations);
-      } else {
-        setDescArray([informations[0]]);
-      }
-    } else {
-      if (informations.length > maxChar) {
-        if (!openInfo) {
-          const descNoArray = informations
-            ? `${informations.slice(0, maxChar)} ... `
-            : informations;
-          setDescChar(descNoArray);
-        } else {
-          setDescChar(informations);
-        }
-      } else {
-        setDescChar(informations);
-      }
-    }
-  }, [openInfo]);
-
-  const buttonText = (() => {
-    if (infoIsArray) {
-      if (openInfo) {
-        return 'Show less';
-      }
-      return `Show ${informations.length - 1} more ...`;
-    } else {
-      if (openInfo) {
-        return 'Show less';
-      }
-      return 'Show more ...';
-    }
-  })();
-
-  return (
-    <>
-      {
-        infoIsArray
-          ? (
-            <ul>
-              { descArray.map((value, index) => (
-                <li key={index}>{ value }</li>
-              ))}
-            </ul>
-          )
-          : (
-            <p>{ descChar }</p>
-          )
-      }
-      { (isMaxArray && infoIsArray) || (isMaxChar && !infoIsArray)
-        ? (
-          <button
-            type="button"
-            className="is-link"
-            onClick={() => setOpenInfo(!openInfo)}
-          >
-            <small>{ buttonText }</small>
-          </button>
-        ) : null }
-    </>
-  );
-}
-
 function eggnogDataTracker({ gene }) {
   const eggnogAnnotation = Genes.findOne({ ID: gene.ID }).eggnog;
   const eggnog = (Object.keys(eggnogAnnotation).length === 0 ? undefined : eggnogAnnotation);
@@ -122,7 +46,7 @@ function SeedEggNOGOrtholog({ seed, evalue, score }) {
   // Split to get uniprot id (eg. 36080.S2K726  -> S2K726).
   const identifiant = seed.split('.')[1];
 
-  // If found 'e' transforms into exponential.
+  // Change into html exponential unicode.
   const eggnogEvalue = (evalue.indexOf('e') > -1
     ? (
       <span>
@@ -140,13 +64,23 @@ function SeedEggNOGOrtholog({ seed, evalue, score }) {
       <a href={uniprotUrl.concat(identifiant)} target="_blank" rel="noreferrer">
         { seed }
       </a>
-      <p>evalue: { eggnogEvalue }</p>
-      <p>score: { score }</p>
+      <p>
+        evalue:
+        <span>
+          { eggnogEvalue }
+        </span>
+      </p>
+      <p>
+        score:
+        <span>
+          { score }
+        </span>
+      </p>
     </td>
   );
 }
 
-function EggnogOGsComponent({ values }) {
+function EggnogOGs({ values }) {
   const eggnog5Url = 'http://eggnog5.embl.de/#/app/results?target_nogs=';
 
   // Split values and get eggnog id. (COG0563@1|root -> COG0563).
@@ -154,7 +88,7 @@ function EggnogOGsComponent({ values }) {
     ? values.map((val) => val.split('@')[0])
     : values.split('@')[0]);
 
-  // Create array or not of <a> tag with the correct url.
+  // Create array or not of <a> tag with the full url.
   const eggOgsUrl = (Array.isArray(eggnogOGsSplit)
     ? eggnogOGsSplit.map((eggS, index) => {
       return (
@@ -170,7 +104,7 @@ function EggnogOGsComponent({ values }) {
   );
 }
 
-function MaxAnnotLvlComponent({ annot }) {
+function MaxAnnotLvl({ annot }) {
   const ncbiUrl = 'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=';
 
   // Split to get ncbi id (eg. 4751|Fungi -> 4751).
@@ -183,7 +117,9 @@ function MaxAnnotLvlComponent({ annot }) {
   );
 }
 
-function GogCategoryComponent({ category }) {
+function GogCategory({ category }) {
+  // Based on
+  // https://ecoliwiki.org/colipedia/index.php/Clusters_of_Orthologous_Groups_(COGs)
   const functionalClassifications = {
     A: 'RNA processing and modification',
     B: 'Chromatin Structure and dynamics',
@@ -232,7 +168,7 @@ function GogCategoryComponent({ category }) {
   );
 }
 
-function KeggtcComponent({ keggtc }){
+function KeggTC({ keggtc }) {
   const keggtcUrl = 'https://tcdb.org/search/result.php?tc=';
   const keggtcFullUrl = (Array.isArray(keggtc)
     ? keggtc.map((val) => {
@@ -253,7 +189,7 @@ function KeggtcComponent({ keggtc }){
   );
 }
 
-function CazyComponent({ cazy }) {
+function Cazy({ cazy }) {
   const cazyUrl = 'http://www.cazy.org/';
   const cazyFullUrl = (Array.isArray(cazy)
     ? cazy.map((val) => {
@@ -274,7 +210,7 @@ function CazyComponent({ cazy }) {
   );
 }
 
-function BiggReactionComponent({ reaction }) {
+function BiggReaction({ reaction }) {
   // Based on: http://bigg.ucsd.edu/models/****/genes/****/
   const biggModelsUrl = 'http://bigg.ucsd.edu/models/';
   const biggGenesUrl = '/genes/';
@@ -323,6 +259,81 @@ function LinkedComponent({ values, url }) {
   );
 }
 
+function EggnogGeneralInformations({ informations }) {
+  const maxChar = 70;
+  const infoIsArray = Array.isArray(informations);
+  const isMaxArray = informations.length > 0;
+  const isMaxChar = informations.length > 70;
+
+  const [openInfo, setOpenInfo] = useState(false);
+  const [descArray, setDescArray] = useState([]);
+  const [descChar, setDescChar] = useState('');
+
+  useEffect(() => {
+    if (infoIsArray) {
+      if (openInfo) {
+        setDescArray(informations);
+      } else {
+        setDescArray([informations[0]]);
+      }
+    } else {
+      if (informations.length > maxChar) {
+        if (!openInfo) {
+          const descNoArray = informations
+            ? `${informations.slice(0, maxChar)} ... `
+            : informations;
+          setDescChar(descNoArray);
+        } else {
+          setDescChar(informations);
+        }
+      }
+      setDescChar(informations);
+    }
+  }, [openInfo]);
+
+  const buttonText = (() => {
+    if (infoIsArray) {
+      if (openInfo) {
+        return 'Show less';
+      }
+      return `Show ${informations.length - 1} more ...`;
+    } else {
+      if (openInfo) {
+        return 'Show less';
+      }
+      return 'Show more ...';
+    }
+  })();
+
+  return (
+    <>
+      {
+        infoIsArray
+          ? (
+            <ul>
+              { descArray.map((value, index) => (
+                <li key={index}>{ value }</li>
+              ))}
+            </ul>
+          )
+          : (
+            <p>{ descChar }</p>
+          )
+      }
+      { (isMaxArray && infoIsArray) || (isMaxChar && !infoIsArray)
+        ? (
+          <button
+            type="button"
+            className="is-link"
+            onClick={() => setOpenInfo(!openInfo)}
+          >
+            <small>{ buttonText }</small>
+          </button>
+        ) : null }
+    </>
+  );
+}
+
 function ArrayEggnogAnnotations({ eggnog }) {
   return (
     <div>
@@ -339,19 +350,19 @@ function ArrayEggnogAnnotations({ eggnog }) {
           <tr>
             <td>eggNOG OGs</td>
             <td>
-              <EggnogOGsComponent values={eggnog.eggNOG_OGs} />
+              <EggnogOGs values={eggnog.eggNOG_OGs} />
             </td>
           </tr>
           <tr>
             <td>max annot lvl</td>
             <td>
-              <MaxAnnotLvlComponent annot={eggnog.max_annot_lvl} />
+              <MaxAnnotLvl annot={eggnog.max_annot_lvl} />
             </td>
           </tr>
           <tr>
             <td>COG category</td>
             <td>
-              <GogCategoryComponent category={eggnog.COG_category} />
+              <GogCategory category={eggnog.COG_category} />
             </td>
           </tr>
           <tr>
@@ -367,67 +378,91 @@ function ArrayEggnogAnnotations({ eggnog }) {
           <tr>
             <td>GOs</td>
             <td className="scrolling-goterms">
-              <LinkedComponent values={eggnog.GOs} url="http://amigo.geneontology.org/amigo/term/" />
+              <LinkedComponent
+                values={eggnog.GOs}
+                url="http://amigo.geneontology.org/amigo/term/"
+              />
             </td>
           </tr>
           <tr>
             <td>EC</td>
             <td>
-              <LinkedComponent values={eggnog.EC} url="https://enzyme.expasy.org/EC/" />
+              <LinkedComponent
+                values={eggnog.EC}
+                url="https://enzyme.expasy.org/EC/"
+              />
             </td>
           </tr>
           <tr>
             <td>KEGG ko</td>
             <td>
-              <LinkedComponent values={eggnog.KEGG_ko} url="https://www.genome.jp/entry/" />
+              <LinkedComponent
+                values={eggnog.KEGG_ko}
+                url="https://www.genome.jp/entry/"
+              />
             </td>
           </tr>
           <tr>
             <td>KEGG Pathway</td>
             <td>
-              <LinkedComponent values={eggnog.KEGG_Pathway} url="https://www.genome.jp/entry/" />
+              <LinkedComponent
+                values={eggnog.KEGG_Pathway}
+                url="https://www.genome.jp/entry/"
+              />
             </td>
           </tr>
           <tr>
             <td>KEGG Reaction</td>
             <td>
-              <LinkedComponent values={eggnog.KEGG_Reaction} url="https://www.genome.jp/entry/" />
+              <LinkedComponent
+                values={eggnog.KEGG_Reaction}
+                url="https://www.genome.jp/entry/"
+              />
             </td>
           </tr>
           <tr>
             <td>KEGG rclass</td>
             <td>
-              <LinkedComponent values={eggnog.KEGG_rclass} url="https://www.genome.jp/entry/" />
+              <LinkedComponent
+                values={eggnog.KEGG_rclass}
+                url="https://www.genome.jp/entry/"
+              />
             </td>
           </tr>
           <tr>
             <td>BRITE</td>
             <td>
-              <LinkedComponent values={eggnog.BRITE} url="https://www.genome.jp/brite/" />
+              <LinkedComponent
+                values={eggnog.BRITE}
+                url="https://www.genome.jp/brite/"
+              />
             </td>
           </tr>
           <tr>
             <td>KEGG TC</td>
             <td>
-              <KeggtcComponent keggtc={eggnog.KEGG_TC} />
+              <KeggTC keggtc={eggnog.KEGG_TC} />
             </td>
           </tr>
           <tr>
             <td>CAZy</td>
             <td>
-              <CazyComponent cazy={eggnog.CAZy} />
+              <Cazy cazy={eggnog.CAZy} />
             </td>
           </tr>
           <tr>
             <td>BiGG Reaction</td>
             <td>
-              <BiggReactionComponent reaction={eggnog.BiGG_Reaction} />
+              <BiggReaction reaction={eggnog.BiGG_Reaction} />
             </td>
           </tr>
           <tr>
             <td>PFAMs</td>
             <td>
-              <LinkedComponent values={eggnog.PFAMs} url="https://pfam.xfam.org/family/" />
+              <LinkedComponent
+                values={eggnog.PFAMs}
+                url="https://pfam.xfam.org/family/"
+              />
             </td>
           </tr>
         </tbody>
