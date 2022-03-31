@@ -61,9 +61,12 @@ function SeedEggNOGOrtholog({ seed, evalue, score }) {
 
   return (
     <td className="seed_eggnog_ortholog_table">
-      <a href={uniprotUrl.concat(identifiant)} target="_blank" rel="noreferrer">
-        { seed }
-      </a>
+      <p>
+        Seed:
+        <a href={uniprotUrl.concat(identifiant)} target="_blank" rel="noreferrer">
+          { seed }
+        </a>
+      </p>
       <p>
         evalue:
         <span>
@@ -288,9 +291,10 @@ function LinkedComponent({ values, url }) {
 
 function EggnogGeneralInformations({ informations }) {
   const maxChar = 70;
+  const maxArrayLines = 5;
   const infoIsArray = Array.isArray(informations);
-  const isMaxArray = informations.length > 5;
-  const isMaxChar = informations.length > 70;
+  const isMaxArray = informations.length > maxArrayLines;
+  const isMaxChar = informations.length > maxChar;
 
   const [openInfo, setOpenInfo] = useState(false);
   const [descArray, setDescArray] = useState([]);
@@ -301,11 +305,11 @@ function EggnogGeneralInformations({ informations }) {
       if (openInfo) {
         setDescArray(informations);
       } else {
-        setDescArray(informations.slice(0, 5));
+        setDescArray(informations.slice(0, maxArrayLines));
       }
     } else {
       if (informations.length > maxChar) {
-        if (!openInfo) {
+        if (openInfo === false) {
           const descNoArray = informations
             ? `${informations.slice(0, maxChar)} ... `
             : informations;
@@ -313,8 +317,9 @@ function EggnogGeneralInformations({ informations }) {
         } else {
           setDescChar(informations);
         }
+      } else {
+        setDescChar(informations);
       }
-      setDescChar(informations);
     }
   }, [openInfo]);
 
@@ -421,7 +426,17 @@ function ArrayEggnogAnnotations({ eggnog }) {
             </th>
           </tr>
           <tr>
-            <td>Orthologous Groups</td>
+            <td>
+              Orthologous Groups
+              <div className="help-tip">
+                <span>
+                  {'\u24d8'}
+                </span>
+                <p>
+                  List of matching eggNOG Orthologous Groups.<br />
+                </p>
+              </div>
+            </td>
             <td>
               <EggnogOGs values={eggnog.eggNOG_OGs} />
             </td>
@@ -433,7 +448,17 @@ function ArrayEggnogAnnotations({ eggnog }) {
             </td>
           </tr>
           <tr>
-            <td>Clusters of Orthologous Groups category</td>
+            <td>
+              Clusters of Orthologous Groups category
+              <div className="help-tip">
+                <span>
+                  {'\u24d8'}
+                </span>
+                <p>
+                  COG functional category inferred from best matching OGs.<br />
+                </p>
+              </div>
+            </td>
             <td>
               <GogCategory category={eggnog.COG_category} />
             </td>
@@ -458,7 +483,17 @@ function ArrayEggnogAnnotations({ eggnog }) {
             </th>
           </tr>
           <tr>
-            <td>Gene ontology terms</td>
+            <td>
+              Gene Ontology
+              <div className="help-tip">
+                <span>
+                  {'\u24d8'}
+                </span>
+                <p>
+                  List of predicted Gene Ontology terms.<br />
+                </p>
+              </div>
+            </td>
             <td className="scrolling-goterms">
               <LinkedComponent
                 values={eggnog.GOs}
