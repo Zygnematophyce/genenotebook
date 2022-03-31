@@ -13,6 +13,45 @@
     margin-left: 3px;
 }
 
+.help-tip {
+    display: inline-block;
+	margin: auto;
+	text-align: center;
+}
+
+.help-tip span{
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.help-tip:hover p{
+    display: block;
+    transform-origin: 100% 0%;
+    -webkit-animation: fadeIn 0.3s ease;
+    animation: fadeIn 0.3s ease;
+}
+
+/* The tooltip */
+.help-tip p {
+	display: none;
+	font-family: sans-serif;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	text-align: center;
+	background-color: #FFFFFF;
+	padding: 12px 16px;
+	width: 178px;
+	height: auto;
+	position: absolute;
+	transform: translate(-50%, 5%);
+	border-radius: 3px;
+	box-shadow: 0 0px 20px 0 rgba(0,0,0,0.1);
+	color: #37393D;
+	font-size: 12px;
+	line-height: 18px;
+	z-index: 99;
+}
+
 .gogcategory p {
     display: inline-block;
     margin-right: 5px;

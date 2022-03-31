@@ -9,7 +9,7 @@ function Header() {
   return (
     <>
       <hr />
-      <h4 className="subtitle is-4">EggNog Annotations</h4>
+      <h4 className="subtitle is-4">eggNOG annotations</h4>
     </>
   );
 }
@@ -82,6 +82,7 @@ function SeedEggNOGOrtholog({ seed, evalue, score }) {
 
 function EggnogOGs({ values }) {
   const eggnog5Url = 'http://eggnog5.embl.de/#/app/results?target_nogs=';
+  const ncbiUrl = 'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=';
 
   // Split values and get eggnog id. (COG0563@1|root -> COG0563).
   const eggnogOGsSplit = (Array.isArray(values)
@@ -92,12 +93,36 @@ function EggnogOGs({ values }) {
   const eggOgsUrl = (Array.isArray(eggnogOGsSplit)
     ? eggnogOGsSplit.map((eggS, index) => {
       return (
-        <a href={eggnog5Url.concat(eggS)} target="_blank" rel="noreferrer">
-          {values[index]}
-        </a>
+        <div>
+          <a
+            href={ncbiUrl.concat(values[index].split('@')[1].split('|')[0])}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {values[index].split('@')[1].split('|')[1]}
+          </a>
+          <span>:  </span>
+          <a href={eggnog5Url.concat(eggS)} target="_blank" rel="noreferrer">
+            {values[index].split('@')[0]}
+          </a>
+        </div>
       );
     })
-    : <a href={eggnog5Url.concat(eggnogOGsSplit)} target="_blank" rel="noreferrer">{values}</a>);
+    : (
+      <div>
+        <a
+          href={ncbiUrl.concat(values.split('@')[1].split('|')[0])}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {values.split('@')[1].split('|')[1]}
+        </a>
+        <span>:  </span>
+        <a href={eggnog5Url.concat(values.split('@')[0])} target="_blank" rel="noreferrer">
+          {values.split('@')[0]}
+        </a>
+      </div>
+    ));
 
   return (
     <EggnogGeneralInformations informations={eggOgsUrl} />
@@ -108,11 +133,13 @@ function MaxAnnotLvl({ annot }) {
   const ncbiUrl = 'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=';
 
   // Split to get ncbi id (eg. 4751|Fungi -> 4751).
-  const maxAnnot = annot.split('|')[0];
+  const splitAnnot = annot.split('|');
+  const maxAnnot = splitAnnot[0];
+  const maxLevel = splitAnnot[1];
 
   return (
     <a href={ncbiUrl.concat(maxAnnot)} target="_blank" rel="noreferrer">
-      { annot }
+      { maxLevel }
     </a>
   );
 }
@@ -262,7 +289,7 @@ function LinkedComponent({ values, url }) {
 function EggnogGeneralInformations({ informations }) {
   const maxChar = 70;
   const infoIsArray = Array.isArray(informations);
-  const isMaxArray = informations.length > 0;
+  const isMaxArray = informations.length > 5;
   const isMaxChar = informations.length > 70;
 
   const [openInfo, setOpenInfo] = useState(false);
@@ -274,7 +301,7 @@ function EggnogGeneralInformations({ informations }) {
       if (openInfo) {
         setDescArray(informations);
       } else {
-        setDescArray([informations[0]]);
+        setDescArray(informations.slice(0, 5));
       }
     } else {
       if (informations.length > maxChar) {
@@ -337,30 +364,76 @@ function EggnogGeneralInformations({ informations }) {
 function ArrayEggnogAnnotations({ eggnog }) {
   return (
     <div>
-      <table className="table-eggnog table is-hoverable is-striped ">
+      <table className="table-eggnog table">
         <tbody>
           <tr>
-            <td>Seed eggnog ortholog</td>
+            <th colSpan="2" className="is-light">
+              General informations
+            </th>
+          </tr>
+          <tr>
+            <td>
+              Seed
+              <div className="help-tip">
+                <span>
+                  {'\u24d8'}
+                  ,
+                </span>
+                <p>
+                  Best protein match in eggNOG.<br />
+                </p>
+              </div>
+
+              evalue
+              <div className="help-tip">
+                <span>
+                  {'\u24d8'}
+                  ,
+                </span>
+                <p>
+                  Best protein match (e-value).<br />
+                </p>
+              </div>
+
+              score
+              <div className="help-tip">
+                <span>
+                  {'\u24d8'}
+                </span>
+                <p>
+                  Best protein match (bit-score).<br />
+                </p>
+              </div>
+            </td>
             <SeedEggNOGOrtholog
               seed={eggnog.seed_eggNOG_ortholog}
               evalue={eggnog.seed_ortholog_evalue}
               score={eggnog.seed_ortholog_score}
             />
           </tr>
+        </tbody>
+      </table>
+      <table className="table-eggnog table">
+        <tbody>
           <tr>
-            <td>eggNOG OGs</td>
+            <th colSpan="2" className="is-light">
+              eggNOG Orthologous Groups
+            </th>
+          </tr>
+          <tr>
+            <td>Orthologous Groups</td>
             <td>
               <EggnogOGs values={eggnog.eggNOG_OGs} />
             </td>
           </tr>
           <tr>
-            <td>max annot lvl</td>
+            <td>Maximum annotation level</td>
             <td>
               <MaxAnnotLvl annot={eggnog.max_annot_lvl} />
             </td>
           </tr>
           <tr>
-            <td>COG category</td>
+            <td>Clusters of Orthologous Groups category</td>
             <td>
               <GogCategory category={eggnog.COG_category} />
             </td>
@@ -375,8 +448,17 @@ function ArrayEggnogAnnotations({ eggnog }) {
             <td>Preferred name</td>
             <td>{eggnog.Preferred_name}</td>
           </tr>
+        </tbody>
+      </table>
+      <table className="table-eggnog table">
+        <tbody>
           <tr>
-            <td>GOs</td>
+            <th colSpan="2" className="is-light">
+              Functional annotations
+            </th>
+          </tr>
+          <tr>
+            <td>Gene ontology terms</td>
             <td className="scrolling-goterms">
               <LinkedComponent
                 values={eggnog.GOs}
@@ -385,7 +467,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
             </td>
           </tr>
           <tr>
-            <td>EC</td>
+            <td>Enzyme Commission</td>
             <td>
               <LinkedComponent
                 values={eggnog.EC}
@@ -403,7 +485,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
             </td>
           </tr>
           <tr>
-            <td>KEGG Pathway</td>
+            <td>KEGG pathway</td>
             <td>
               <LinkedComponent
                 values={eggnog.KEGG_Pathway}
@@ -412,7 +494,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
             </td>
           </tr>
           <tr>
-            <td>KEGG Reaction</td>
+            <td>KEGG reaction</td>
             <td>
               <LinkedComponent
                 values={eggnog.KEGG_Reaction}
@@ -439,7 +521,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
             </td>
           </tr>
           <tr>
-            <td>KEGG TC</td>
+            <td>KEGG tc</td>
             <td>
               <KeggTC keggtc={eggnog.KEGG_TC} />
             </td>
@@ -451,7 +533,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
             </td>
           </tr>
           <tr>
-            <td>BiGG Reaction</td>
+            <td>BiGG reaction</td>
             <td>
               <BiggReaction reaction={eggnog.BiGG_Reaction} />
             </td>
