@@ -198,6 +198,53 @@ function GogCategory({ category }) {
   );
 }
 
+function DescriptionGeneOntologyApi({ goterm }) {
+  const [description, setDescription] = useState('');
+  const GOsApi = 'http://api.geneontology.org/api/bioentity/';
+
+  useEffect(() => {
+    fetch(GOsApi.concat(goterm))
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw response;
+      })
+      .then((data) => {
+        setDescription(data.label);
+      });
+  }, [description]);
+
+  return (
+    <p className="gogcategory">{description}</p>
+  );
+}
+
+function GeneOntology({ gosId }) {
+  const GOsUrl = 'http://amigo.geneontology.org/amigo/term/';
+
+  const GOsAttribute = (Array.isArray(gosId)
+    ? gosId.map((ID) => {
+      return (
+        <div className="seed_eggnog_ortholog_table">
+          <a href={GOsUrl.concat(ID)} target="_blank" rel="noreferrer">
+            {ID}
+          </a>
+          <DescriptionGeneOntologyApi goterm={ID} />
+        </div>
+      );
+    })
+    : (
+      <a href={GOsUrl.concat(gosId)} target="_blank" rel="noreferrer">
+        {gosId}
+      </a>
+    ));
+
+  return (
+    <EggnogGeneralInformations informations={GOsAttribute} />
+  );
+}
+
 function KeggTC({ keggtc }) {
   const keggtcUrl = 'https://tcdb.org/search/result.php?tc=';
   const keggtcFullUrl = (Array.isArray(keggtc)
@@ -385,7 +432,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
                   ,
                 </span>
                 <p>
-                  Best protein match in eggNOG.<br />
+                  Best protein match in eggNOG.
                 </p>
               </div>
 
@@ -396,7 +443,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
                   ,
                 </span>
                 <p>
-                  Best protein match (e-value).<br />
+                  Best protein match (e-value).
                 </p>
               </div>
 
@@ -406,7 +453,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
                   {'\u24d8'}
                 </span>
                 <p>
-                  Best protein match (bit-score).<br />
+                  Best protein match (bit-score).
                 </p>
               </div>
             </td>
@@ -433,7 +480,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
                   {'\u24d8'}
                 </span>
                 <p>
-                  List of matching eggNOG Orthologous Groups.<br />
+                  List of matching eggNOG Orthologous Groups.
                 </p>
               </div>
             </td>
@@ -490,19 +537,34 @@ function ArrayEggnogAnnotations({ eggnog }) {
                   {'\u24d8'}
                 </span>
                 <p>
-                  List of predicted Gene Ontology terms.<br />
+                  List of predicted Gene Ontology terms.
                 </p>
               </div>
             </td>
-            <td className="scrolling-goterms">
-              <LinkedComponent
-                values={eggnog.GOs}
-                url="http://amigo.geneontology.org/amigo/term/"
-              />
-            </td>
+            {
+              eggnog.GOs.length > 0 && eggnog.GOs[0] !== ' '
+                ? (
+                  <td className="scrolling-goterms">
+                    <GeneOntology gosId={eggnog.GOs} />
+                  </td>
+                )
+                : (
+                  <td> </td>
+                )
+            }
           </tr>
           <tr>
-            <td>Enzyme Commission</td>
+            <td>
+              Enzyme Commission
+              <div className="help-tip">
+                <span>
+                  {'\u24d8'}
+                </span>
+                <p>
+                  EC numbers specify enzyme-catalysed reactions.
+                </p>
+              </div>
+            </td>
             <td>
               <LinkedComponent
                 values={eggnog.EC}
