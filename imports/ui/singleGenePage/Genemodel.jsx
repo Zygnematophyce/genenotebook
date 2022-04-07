@@ -203,9 +203,9 @@ function Transcript({
           />
         </PopoverBody>
       </Popover>
-      {exons.map((exon) => (
+      {exons.map((exon, index) => (
         <Exon
-          key={exon.ID}
+          key={index}
           {...{
             genomeId,
             geneId,
