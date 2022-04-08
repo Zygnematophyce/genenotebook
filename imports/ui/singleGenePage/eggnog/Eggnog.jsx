@@ -43,11 +43,11 @@ function eggnogDataTracker({ gene }) {
 function SeedEggNOGOrtholog({ seed, evalue, score }) {
   const uniprotUrl = 'https://www.uniprot.org/uniprot/';
 
-  // Split to get uniprot id (eg. 36080.S2K726  -> S2K726).
-  const identifiant = seed.split('.')[1];
+  // Split to get uniprot id (e.g: 36080.S2K726 -> S2K726).
+  const uniprotID = seed.split('.')[1];
 
-  // Change into html exponential unicode.
-  const eggnogEvalue = (evalue.indexOf('e') > -1
+  // Set 'e' to exponential unicode (e.g: 6.14e-161 -> 6.14ₑ-161)
+  const expEvalue = (evalue.indexOf('e') > -1
     ? (
       <span>
         {evalue.split('e')[0]}
@@ -63,14 +63,14 @@ function SeedEggNOGOrtholog({ seed, evalue, score }) {
     <td className="seed_eggnog_ortholog_table">
       <p>
         Seed:
-        <a href={uniprotUrl.concat(identifiant)} target="_blank" rel="noreferrer">
+        <a href={`${uniprotUrl}${uniprotID}`} target="_blank" rel="noreferrer">
           { seed }
         </a>
       </p>
       <p>
         evalue:
         <span>
-          { eggnogEvalue }
+          { expEvalue }
         </span>
       </p>
       <p>
@@ -83,30 +83,45 @@ function SeedEggNOGOrtholog({ seed, evalue, score }) {
   );
 }
 
-function EggnogOGs({ values }) {
+function EggnogOGs({ orthologousGroups }) {
   const eggnog5Url = 'http://eggnog5.embl.de/#/app/results?target_nogs=';
   const ncbiUrl = 'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=';
 
-  // Split values and get eggnog id. (COG0563@1|root -> COG0563).
-  const eggnogOGsSplit = (Array.isArray(values)
-    ? values.map((val) => val.split('@')[0])
-    : values.split('@')[0]);
+  // Split orthologous groups to get eggNOG 5 id (e.g: COG0563@1|root -> COG0563).
+  const eggnogOGsID = (Array.isArray(orthologousGroups)
+    ? orthologousGroups.map((val) => val.split('@')[0])
+    : orthologousGroups.split('@')[0]);
 
-  // Create array or not of <a> tag with the full url.
-  const eggOgsUrl = (Array.isArray(eggnogOGsSplit)
-    ? eggnogOGsSplit.map((eggS, index) => {
+  // Split orthologous groups to get NCBI id (e.g: KOG3078@2759|Eukaryota -> 2759).
+  const ncbiOGsID = (Array.isArray(orthologousGroups)
+    ? orthologousGroups.map((val) => val.split('@')[1].split('|')[0])
+    : orthologousGroups.split('@')[1].split('|')[0]);
+
+  // Split orthologous groups and get taxonomy (e.g: 38FS5@33154|Opisthokonta ->
+  // Opisthokonta).
+  const taxonOGs = (Array.isArray(orthologousGroups)
+    ? orthologousGroups.map((val) => val.split('@')[1].split('|')[1])
+    : orthologousGroups.split('@')[1].split('|')[1]);
+
+  // Create links to ncbi and eggNOG 5 (e.g: Fungi incertae sedis: 1GT34)
+  const eggOgsUrl = (Array.isArray(eggnogOGsID)
+    ? eggnogOGsID.map((egg5ID, index) => {
       return (
         <div>
           <a
-            href={ncbiUrl.concat(values[index].split('@')[1].split('|')[0])}
+            href={`${ncbiUrl}${ncbiOGsID[index]}`}
             target="_blank"
             rel="noreferrer"
           >
-            {values[index].split('@')[1].split('|')[1]}
+            {`${taxonOGs[index]}`}
           </a>
           <span>:  </span>
-          <a href={eggnog5Url.concat(eggS)} target="_blank" rel="noreferrer">
-            {values[index].split('@')[0]}
+          <a
+            href={`${eggnog5Url}${egg5ID}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {egg5ID}
           </a>
         </div>
       );
@@ -114,15 +129,19 @@ function EggnogOGs({ values }) {
     : (
       <div>
         <a
-          href={ncbiUrl.concat(values.split('@')[1].split('|')[0])}
+          href={`${ncbiUrl}${ncbiOGsID}`}
           target="_blank"
           rel="noreferrer"
         >
-          {values.split('@')[1].split('|')[1]}
+          {`${taxonOGs}`}
         </a>
         <span>:  </span>
-        <a href={eggnog5Url.concat(values.split('@')[0])} target="_blank" rel="noreferrer">
-          {values.split('@')[0]}
+        <a
+          href={`${eggnog5Url}${eggnogOGsID}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {eggnogOGsID}
         </a>
       </div>
     ));
@@ -135,20 +154,20 @@ function EggnogOGs({ values }) {
 function MaxAnnotLvl({ annot }) {
   const ncbiUrl = 'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=';
 
-  // Split to get ncbi id (eg. 4751|Fungi -> 4751).
-  const splitAnnot = annot.split('|');
-  const maxAnnot = splitAnnot[0];
-  const maxLevel = splitAnnot[1];
+  // Split annotation level to get NCBI id (e.g: 4751|Fungi -> 4751).
+  const annotationSplit = annot.split('|');
+  const ncbiID = annotationSplit[0];
+  const taxonomyLevel = annotationSplit[1];
 
   return (
-    <a href={ncbiUrl.concat(maxAnnot)} target="_blank" rel="noreferrer">
-      { maxLevel }
+    <a href={`${ncbiUrl}${ncbiID}`} target="_blank" rel="noreferrer">
+      { taxonomyLevel }
     </a>
   );
 }
 
 function GogCategory({ category }) {
-  // Based on
+  // Based on :
   // https://ecoliwiki.org/colipedia/index.php/Clusters_of_Orthologous_Groups_(COGs)
   const functionalClassifications = {
     A: 'RNA processing and modification',
@@ -168,7 +187,7 @@ function GogCategory({ category }) {
     O: 'Post-translational modification, protein turnover, chaperone functions',
     P: 'Inorganic ion transport and metabolism',
     Q: 'Secondary Structure',
-    T: ' Signal Transduction',
+    T: 'Signal Transduction',
     U: 'Intracellular trafficing and secretion',
     Y: 'Nuclear structure',
     Z: 'Cytoskeleton',
@@ -202,8 +221,9 @@ function DescriptionGeneOntologyApi({ goterm }) {
   const [description, setDescription] = useState('');
   const GOsApi = 'http://api.geneontology.org/api/bioentity/';
 
+  // May cause Cross-Origin Request Blocked error.
   useEffect(() => {
-    fetch(GOsApi.concat(goterm))
+    fetch(`${GOsApi}${goterm}`)
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -220,14 +240,18 @@ function DescriptionGeneOntologyApi({ goterm }) {
   );
 }
 
-function GeneOntology({ gosId }) {
+function GeneOntology({ gosID }) {
   const GOsUrl = 'http://amigo.geneontology.org/amigo/term/';
 
-  const GOsAttribute = (Array.isArray(gosId)
-    ? gosId.map((ID) => {
+  const GOsAttribute = (Array.isArray(gosID)
+    ? gosID.map((ID) => {
       return (
         <div className="seed_eggnog_ortholog_table">
-          <a href={GOsUrl.concat(ID)} target="_blank" rel="noreferrer">
+          <a
+            href={`${GOsUrl}${ID}`}
+            target="_blank"
+            rel="noreferrer"
+          >
             {ID}
           </a>
           <DescriptionGeneOntologyApi goterm={ID} />
@@ -235,8 +259,12 @@ function GeneOntology({ gosId }) {
       );
     })
     : (
-      <a href={GOsUrl.concat(gosId)} target="_blank" rel="noreferrer">
-        {gosId}
+      <a
+        href={`${GOsUrl}${gosID}`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        {gosID}
       </a>
     ));
 
@@ -245,29 +273,9 @@ function GeneOntology({ gosId }) {
   );
 }
 
-function KeggTC({ keggtc }) {
-  const keggtcUrl = 'https://tcdb.org/search/result.php?tc=';
-  const keggtcFullUrl = (Array.isArray(keggtc)
-    ? keggtc.map((val) => {
-      return (
-        <a
-          href={keggtcUrl.concat(val)}
-          target="_blank"
-          rel="noreferrer"
-        >
-          { val }
-        </a>
-      );
-    })
-    : <a href={keggtc.concat(keggtc)} target="_blank" rel="noreferrer">{ keggtc }</a>);
-
-  return (
-    <EggnogGeneralInformations informations={keggtcFullUrl} />
-  );
-}
-
 function Cazy({ cazy }) {
   const cazyUrl = 'http://www.cazy.org/';
+
   const cazyFullUrl = (Array.isArray(cazy)
     ? cazy.map((val) => {
       return (
@@ -288,13 +296,11 @@ function Cazy({ cazy }) {
 }
 
 function BiggReaction({ reaction }) {
-  // Based on: http://bigg.ucsd.edu/models/****/genes/****/
   const biggModelsUrl = 'http://bigg.ucsd.edu/models/';
   const biggGenesUrl = '/genes/';
 
   // Split bigg reaction to get models and genes id (eg. iMM904.YER091C ->
-  // model: iMM904 and gene: YER091C) and create array or not of <a> tag with
-  // full url.
+  // model: iMM904 and gene: YER091C) and create url.
   const biggReactionUrl = (Array.isArray(reaction)
     ? reaction.map((val) => {
       return (
@@ -485,7 +491,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
               </div>
             </td>
             <td>
-              <EggnogOGs values={eggnog.eggNOG_OGs} />
+              <EggnogOGs orthologousGroups={eggnog.eggNOG_OGs} />
             </td>
           </tr>
           <tr>
@@ -502,7 +508,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
                   {'\u24d8'}
                 </span>
                 <p>
-                  COG functional category inferred from best matching OGs.<br />
+                  COG functional category inferred from best matching OGs.
                 </p>
               </div>
             </td>
@@ -545,7 +551,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
               eggnog.GOs.length > 0 && eggnog.GOs[0] !== ' '
                 ? (
                   <td className="scrolling-goterms">
-                    <GeneOntology gosId={eggnog.GOs} />
+                    <GeneOntology gosID={eggnog.GOs} />
                   </td>
                 )
                 : (
@@ -620,7 +626,10 @@ function ArrayEggnogAnnotations({ eggnog }) {
           <tr>
             <td>KEGG tc</td>
             <td>
-              <KeggTC keggtc={eggnog.KEGG_TC} />
+              <LinkedComponent
+                values={eggnog.KEGG_TC}
+                url="https://tcdb.org/search/result.php?tc="
+              />
             </td>
           </tr>
           <tr>
