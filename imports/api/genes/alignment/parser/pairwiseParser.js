@@ -20,10 +20,10 @@ class Pairwise {
  * @class
  * @constructor
  * @public
- * @param {string} program - The program used (BLAST or Diamond).
- * @param {string} algorithm - The algorithm used (blastx, blastp ...).
- * @param {string} matrix - The substitution matrix used for alignment (BLOSUM).
- * @param {string} database - The reference database (Non-redundant protein sequences (nr)).
+ * @param {String} program - The program used (BLAST or Diamond).
+ * @param {String} algorithm - The algorithm used (blastx, blastp ...).
+ * @param {String} matrix - The substitution matrix used for alignment (BLOSUM).
+ * @param {String} database - The reference database (Non-redundant protein sequences (nr)).
  */
 class PairwiseProcessor {
   constructor(program, algorithm, matrix, database) {
@@ -39,7 +39,7 @@ class PairwiseProcessor {
   /**
    * Read line by line and complete the pairwises information.
    * @function
-   * @param {string} line - The line to parse.
+   * @param {String} line - The line to parse.
    */
   parse = (line) => {
     if (line.length !== 0 || !(/^BLAST/.test(line))) {
@@ -47,7 +47,6 @@ class PairwiseProcessor {
         /**
          * Get and clean the name of the query sequence according to the program used.
          * (e.g : 'Query= MMUCEDO_000001-T1' becomes MMUCEDO_000001-T1 ).
-         * @type {string}
          */
         const queryClean = (
           this.program === 'blast'
@@ -95,7 +94,6 @@ class PairwiseProcessor {
         /**
          * Get and clean the length of the query sequence according to the program used.
          * (e.g : 'Length=1022' becomes 1022 ).
-         * @type {string}
          */
         const lengthClean = (
           this.program === 'blast'
@@ -125,9 +123,8 @@ class PairwiseProcessor {
         /**
          * Get and clean the definition of a hit sequence.
          * (e.g : '>KAG2206553.1 hypothetical' becomes KAG2206553.1 hypothetical).
-         * @type {string}
          */
-        const definition = line.replace('>', '');
+        const definition = line.replace(/^>/g, '');
 
         /** Check if there are identical proteins. */
         if (this.pairWise.iteration_hits.length !== 0) {
